@@ -2,7 +2,8 @@
 
 ## Project Set Up
 1. Clone Repository
-    - git clone <repository url> and cd <project directory>
+    - git clone [\[repository url\]](https://github.com/lizbethkr/Outlier-Detection.git)
+    - cd Outlier-Detection 
 2. Create Virtual Environment
     - make sure to use Python 3.12
     - python -m venv venv

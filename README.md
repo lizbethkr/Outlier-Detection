@@ -14,7 +14,7 @@
 5. Deactivate Virtual Environment When Finished
     - deactivate
 
-Notes:
-    - Remember to activate the virtual environment before each project session and before installing new requirements. Refer to step 3. 
-    - Update requirements.txt when new requirements are added. After installing new requirements, run:
-        - pip freeze > requirements.txt
+### Notes:
+- Remember to activate the virtual environment before each project session and before installing new requirements. Refer to step 3. 
+- Update requirements.txt when new requirements are added. After installing new requirements, run:
+  - pip freeze > requirements.txt

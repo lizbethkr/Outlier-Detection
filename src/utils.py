@@ -4,7 +4,6 @@ from sklearn.neighbors import LocalOutlierFactor
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
 
-
 def iqr_outlier_detection(df, cols):
     """
     Detects outliers in financial columns using IQR
@@ -27,16 +26,13 @@ def iqr_outlier_detection(df, cols):
         low_lim = Q1 - 1.5 * IQR
         up_lim = Q3 + 1.5 * IQR
 
-        outliers =[]
-        for x in df_col:
-            if ((x> up_lim) or (x<low_lim)):
-                    outliers.append(float(x))
+        outliers = df_col[(df_col < low_lim) | (df_col > up_lim)].index.tolist()
         outliers_dict[col] = outliers
 
         print(f'Column: {col}   |   Outliers: {len(outliers)}')
 
     return outliers_dict
-
+    
 
 def lof_outlier_detection(df, cols, n_neighbors=20, contamination=0.05):
     """

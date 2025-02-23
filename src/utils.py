@@ -3,6 +3,8 @@ import pandas as pd
 from sklearn.neighbors import LocalOutlierFactor
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 def iqr_outlier_detection(df, cols):
     """
@@ -12,6 +14,8 @@ def iqr_outlier_detection(df, cols):
     dict: A dictionary with the financial column names as keys and the number of outliers as values.
     """
     outliers_dict = {}
+
+    print('Outliers per column using IQR method:')
 
     for col in cols:
         df_col = df[col]
@@ -53,7 +57,7 @@ def lof_outlier_detection(df, cols, n_neighbors=20, contamination=0.05):
     # Get the indices of the outliers (-1 indicates an outlier)
     outlier_indices = np.where(outliers == -1)[0].tolist()
 
-    print(f'Total outliers detected: {len(outlier_indices)}')
+    #print(f'Total outliers detected: {len(outlier_indices)}')
     return outlier_indices
 
 
@@ -76,5 +80,27 @@ def iso_forest_outlier_detection(df, cols, contaimination=0.05):
     # Get the indices of the outliers (-1 indicates an outlier)
     outlier_indices = np.where(outliers == -1)[0].tolist()
 
-    print(f'Total Outliers: {len(outlier_indices)}')
+    #print(f'Total Outliers: {len(outlier_indices)}')
     return outlier_indices
+
+def combined_outlier_methods(df, cols, n_neighbors=20, contamination=0.05):
+    """
+    Combines IQR, LOF and Isolation Forest outlier detection methods, gives 
+    an outlier score for each row.
+
+    Returns:
+    pd.DataFrame: A DataFrame with the outlier scores for each row.
+    """
+    # Run outlier detection functions
+    iqr_outliers = iqr_outlier_detection(df, cols)
+    lof_outliers = lof_outlier_detection(df, cols, n_neighbors, contamination)
+    iso_forest_outliers = iso_forest_outlier_detection(df, cols, contamination)
+
+    # Find common indices that are outliers in all three methods
+    common_outliers_indices = set(iqr_outliers) & set(lof_outliers) & set(iso_forest_outliers)
+    
+    # Extract the rows that are outliers in all three methods
+    common_outliers_df = df.iloc[list(common_outliers_indices)]
+
+    return common_outliers_df
+    

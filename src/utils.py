@@ -85,22 +85,33 @@ def iso_forest_outlier_detection(df, cols, contaimination=0.05):
 
 def combined_outlier_methods(df, cols, n_neighbors=20, contamination=0.05):
     """
-    Combines IQR, LOF and Isolation Forest outlier detection methods, gives 
-    an outlier score for each row.
-
+    Combines IQR, LOF, and Isolation Forest outlier detection methods.
     Returns:
-    pd.DataFrame: A DataFrame with the outlier scores for each row.
+    pd.DataFrame: DataFrame containing common outliers.
     """
+
     # Run outlier detection functions
     iqr_outliers = iqr_outlier_detection(df, cols)
     lof_outliers = lof_outlier_detection(df, cols, n_neighbors, contamination)
     iso_forest_outliers = iso_forest_outlier_detection(df, cols, contamination)
 
-    # Find common indices that are outliers in all three methods
-    common_outliers_indices = set(iqr_outliers) & set(lof_outliers) & set(iso_forest_outliers)
-    
-    # Extract the rows that are outliers in all three methods
-    common_outliers_df = df.iloc[list(common_outliers_indices)]
+    # Convert IQR dictionary to a unique set of indices
+    iqr_outlier_indices = set(idx for outliers in iqr_outliers.values() for idx in outliers)
+
+    # Convert LOF and ISO indices from row positions to actual DataFrame index values
+    lof_outlier_indices = set(df.index[lof_outliers])  
+    iso_forest_outlier_indices = set(df.index[iso_forest_outliers])  
+
+    # Find common outliers (in at least two methods instead of all three)
+    from collections import Counter
+    all_outliers = list(iqr_outlier_indices) + list(lof_outlier_indices) + list(iso_forest_outlier_indices)
+    outlier_counts = Counter(all_outliers)
+
+    common_outliers_indices = {idx for idx, count in outlier_counts.items() if count >= 2}
+
+    # Extract the rows that are outliers in at least two methods
+    common_outliers_df = df.loc[list(common_outliers_indices)]
 
     return common_outliers_df
+
     
